@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "176162646582",
+    "firebase_url": "https://reservatest-9872c.firebaseio.com",
+    "project_id": "reservatest-9872c",
+    "storage_bucket": "reservatest-9872c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:176162646582:android:2ddcb83b6a6911231a8697",
+        "android_client_info": {
+          "package_name": "com.example.reservatest"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "176162646582-jcq6mglfo2hcgg4m7g8f3majgggmosoc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAkw-wa2gZVBHW4HEGMkT11BIeEd6vHvPA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "176162646582-jcq6mglfo2hcgg4m7g8f3majgggmosoc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
