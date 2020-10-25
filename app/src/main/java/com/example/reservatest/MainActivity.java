@@ -4,6 +4,8 @@ package com.example.reservatest;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.view.View;
@@ -12,9 +14,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,11 +27,14 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     EditText etUsuario, etContrasena, etTelefono, etEmail, etFecha;
-    Button btnAgregar;
+    Button btnCOnsultar, btnConsultarUsuario, btnAgregar;
+    RecyclerView rvUsuarios;
 
     DatabaseReference databaseReference;
 
     List<Usuario> listaUsuarios = new ArrayList<>();
+
+    AdaptadorUsuario adaptador;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,13 +46,80 @@ public class MainActivity extends AppCompatActivity {
         etTelefono = findViewById(R.id.etTelefono);
         etEmail = findViewById(R.id.etEmail);
         btnAgregar = findViewById(R.id.btnAgregar);
+        btnCOnsultar = findViewById(R.id.btnConsultar);
+        btnConsultarUsuario = findViewById(R.id.btnConsultarUsuario);
+        rvUsuarios = findViewById(R.id.rvUsuarios);
+        rvUsuarios.setLayoutManager(new GridLayoutManager(this,1));
+
 
         databaseReference = FirebaseDatabase.getInstance().getReference();
+
+
+        obtenerUsuario();
 
         btnAgregar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 agregarUsuario();
+            }
+        });
+
+        btnCOnsultar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                obtenerUsuario();
+            }
+        });
+
+        btnConsultarUsuario.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                obtenerUsuario();
+            }
+        });
+    }
+
+    public void obtenerUsuariuo(){
+        listaUsuarios.clear();
+        String usuario = etUsuario.getText().toString();
+
+        Query query = databaseReference.child("usuario").orderByChild("usuario").equalTo(usuario);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot objeto : dataSnapshot.getChildren()) {
+                    listaUsuarios.add(objeto.getValue(Usuario.class));
+                }
+
+                adaptador = new AdaptadorUsuario(MainActivity.this, listaUsuarios);
+                rvUsuarios.setAdapter(adaptador);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+
+    public void obtenerUsuario(){
+        listaUsuarios.clear();
+        databaseReference.child("usuario").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot objeto : dataSnapshot.getChildren()){
+                    listaUsuarios.add(objeto.getValue(Usuario.class));
+
+                }
+
+                adaptador = new AdaptadorUsuario(MainActivity.this, listaUsuarios);
+                rvUsuarios.setAdapter(adaptador);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
             }
         });
     }
