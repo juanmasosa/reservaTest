@@ -27,7 +27,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     EditText etUsuario, etContrasena, etTelefono, etEmail, etFecha;
-    Button btnCOnsultar, btnConsultarUsuario, btnAgregar;
+    Button btnCOnsultar, btnConsultarUsuario, btnAgregar, btnEditar;
     RecyclerView rvUsuarios;
 
     DatabaseReference databaseReference;
@@ -46,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         etTelefono = findViewById(R.id.etTelefono);
         etEmail = findViewById(R.id.etEmail);
         btnAgregar = findViewById(R.id.btnAgregar);
+        btnEditar = findViewById(R.id.btnEditar);
         btnCOnsultar = findViewById(R.id.btnConsultar);
         btnConsultarUsuario = findViewById(R.id.btnConsultarUsuario);
         rvUsuarios = findViewById(R.id.rvUsuarios);
@@ -64,6 +65,13 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        btnEditar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                editarUsuario();
+            }
+        });
+
         btnCOnsultar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,6 +85,7 @@ public class MainActivity extends AppCompatActivity {
                 obtenerUsuario();
             }
         });
+
     }
 
     public void obtenerUsuariuo(){
@@ -93,6 +102,8 @@ public class MainActivity extends AppCompatActivity {
 
                 adaptador = new AdaptadorUsuario(MainActivity.this, listaUsuarios);
                 rvUsuarios.setAdapter(adaptador);
+
+                limpiarCampos();
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -122,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+        limpiarCampos();
     }
 
     public void agregarUsuario(){
@@ -141,6 +153,35 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
                 limpiarCampos();
+    }
+
+    public void editarUsuario(){
+        listaUsuarios.clear();
+
+        Usuario usuario = new Usuario(
+            etUsuario.getText().toString(),
+            etContrasena.getText().toString(),
+            etTelefono.getText().toString(),
+            etEmail.getText().toString()
+        );
+
+        Query query = databaseReference.child("usuario").orderByChild("usuario").equalTo(usuario.getUsuario());
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String key = "";
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    key = ds.getKey();//obtiene del id del registro para editarlo
+                }
+                databaseReference.child("usuario").child(key).setValue(usuario);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        limpiarCampos();
     }
     public void limpiarCampos(){
         etUsuario.setText("");
