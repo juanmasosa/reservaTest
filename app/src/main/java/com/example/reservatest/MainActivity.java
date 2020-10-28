@@ -27,7 +27,7 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     EditText etUsuario, etContrasena, etTelefono, etEmail, etFecha;
-    Button btnCOnsultar, btnConsultarUsuario, btnAgregar, btnEditar;
+    Button btnCOnsultar, btnAgregar, btnEditar, btnBorrar;
     RecyclerView rvUsuarios;
 
     DatabaseReference databaseReference;
@@ -47,8 +47,8 @@ public class MainActivity extends AppCompatActivity {
         etEmail = findViewById(R.id.etEmail);
         btnAgregar = findViewById(R.id.btnAgregar);
         btnEditar = findViewById(R.id.btnEditar);
+        btnBorrar = findViewById(R.id.btnEliminar);
         btnCOnsultar = findViewById(R.id.btnConsultar);
-        btnConsultarUsuario = findViewById(R.id.btnConsultarUsuario);
         rvUsuarios = findViewById(R.id.rvUsuarios);
         rvUsuarios.setLayoutManager(new GridLayoutManager(this,1));
 
@@ -72,14 +72,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnCOnsultar.setOnClickListener(new View.OnClickListener() {
+        btnBorrar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                obtenerUsuario();
+                borrarUsuario();
             }
         });
 
-        btnConsultarUsuario.setOnClickListener(new View.OnClickListener() {
+        btnCOnsultar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 obtenerUsuario();
@@ -174,6 +174,28 @@ public class MainActivity extends AppCompatActivity {
                     key = ds.getKey();//obtiene del id del registro para editarlo
                 }
                 databaseReference.child("usuario").child(key).setValue(usuario);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        limpiarCampos();
+    }
+
+    public void borrarUsuario(){
+        listaUsuarios.clear();
+        String usuario = etUsuario.getText().toString();
+
+        Query query = databaseReference.child("usuario").orderByChild("usuario").equalTo(usuario);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot objeto : dataSnapshot.getChildren()){
+                    objeto.getRef().removeValue();
+                }
+                Toast.makeText(MainActivity.this, "Se elimino el Usuario", Toast.LENGTH_LONG).show();
             }
 
             @Override
